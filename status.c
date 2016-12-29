@@ -19,7 +19,7 @@ static char serialPort[128] = "/dev/ttyUSB0";
 static const char mountPath[] = "/";
 
 static const int GB = 1024*1024*1024;
-static char buffer[64];
+static char buffer[1024];
 
 struct CPUData_ {
    unsigned long long int totalTime;

@@ -106,9 +106,9 @@ int LCD_WriteData(int fd, const char *str)
       while (isbusy != '6') {
          res = read(fd, &isbusy, 1);
          if (res == -1) {
-            usleep(100000);
+            usleep(10000);
          } else {
-            printf("res: %d -- v=: 0x%x -- '%c'\n", res, isbusy, isbusy);
+            //printf("res: %d -- v=: 0x%x -- '%c'\n", res, isbusy, isbusy);
          }
       }
    }
