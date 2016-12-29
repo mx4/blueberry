@@ -43,10 +43,12 @@ int main(int argc, char **argv)
       return 1;
    }
 
+   printf("Resetting LCD\n");
    res = LCD_WriteData(fd, "\ec");
    if (res != 0) {
       goto exit;
    }
+
    printf("Printing '%s'\n", str);
    res = LCD_WriteData(fd, str);
    if (res != 0) {

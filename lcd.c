@@ -21,6 +21,7 @@ void LCD_SetVerbose(int v)
    verbose = v;
 }
 
+
 int LCD_SerialSetup(const char *devPath)
 {
    struct termios options;
@@ -63,6 +64,7 @@ int LCD_SerialSetup(const char *devPath)
 
 int LCD_WriteData(int fd, const char *str)
 {
+   int isreset = strncmp(str, "\ec", 2) == 0;
    ssize_t res;
    char isbusy = 0;
    int length;
@@ -80,10 +82,35 @@ int LCD_WriteData(int fd, const char *str)
       return 1;
    }
 
-   LOG("Prelude written.\n");
-   while (isbusy != '6') {
-      read(fd, &isbusy, 1);
-      usleep(10000);
+   if (isreset) {
+      LOG("Expecting reset..\n");
+      while (1) {
+         res = read(fd, &isbusy, 1);
+         if (res != -1) {
+            break;
+         }
+         usleep(10000);
+      }
+      LOG("Reset almost done.\n");
+      while (isbusy != '6') {
+         res = read(fd, &isbusy, 1);
+         if (res == -1) {
+            break;
+         } else {
+            //printf("reset: %d -- v=: 0x%x -- '%c'\n", res, isbusy, isbusy);
+         }
+      }
+      LOG("Reset done.\n");
+   } else {
+      LOG("Waiting for non-busy status.\n");
+      while (isbusy != '6') {
+         res = read(fd, &isbusy, 1);
+         if (res == -1) {
+            usleep(100000);
+         } else {
+            printf("res: %d -- v=: 0x%x -- '%c'\n", res, isbusy, isbusy);
+         }
+      }
    }
 
    LOG("Now writing..\n");
